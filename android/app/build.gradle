@@ -1,0 +1,63 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
+}
+
+android {
+    namespace "com.example.fitloch"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.fitloch"
+        minSdk 26  // Ensure background execution works properly
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        // Enable background tasks (WorkManager)
+        manifestPlaceholders = [
+            'workmanagerConfig': "true"
+        ]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        // Enable Java 8+ features and desugaring support
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    // Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.2.3')
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    // WorkManager for background tasks
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+
+    // Core Library Desugaring (Fixes Java 8+ issue)
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.3"
+}
+
+apply plugin: 'com.google.gms.google-services'

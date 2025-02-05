@@ -1,0 +1,88 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.fitloch">
+
+    <!-- ✅ Internet & Network Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- ✅ Wake Lock to Keep CPU Running -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- ✅ Receive Boot Completed to Restart Step Counting After Reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- ✅ Foreground Service Permission -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <!-- ✅ Required for Step Counting on Android 10+ -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+
+    <!-- ✅ Sensors Permission (Required for accelerometer access) -->
+    <uses-permission android:name="android.permission.BODY_SENSORS"/>
+
+    <!-- ✅ Ignore Battery Optimization to Keep the App Alive -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+
+    <application
+        android:label="FitLoch"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+
+        <service
+            android:name="id.flutter.background_service.BackgroundService"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:foregroundServiceType="health"
+            android:exported="false"/>
+
+
+        <!-- ✅ Background Service for Pedometer -->
+        <service
+            android:name="com.ryanheise.flutter_background.FlutterBackgroundService"
+            android:foregroundServiceType="health"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:exported="false"/>
+
+        <!-- ✅ WorkManager Auto Restart After Boot -->
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- ✅ Handle Boot Restarting for WorkManager -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"/>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2"/>
+    </application>
+</manifest>
